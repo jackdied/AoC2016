@@ -14,7 +14,6 @@ In your puzzle input, how many of the listed triangles are possible?
 
 '''
 
-my_input = open('day3_input.txt').read()  # very wordy, keep it in a file
 
 def valid_triangle(sides):
     sides = sorted(sides)
@@ -24,10 +23,11 @@ def valid_triangle(sides):
 assert True == valid_triangle([3, 4, 5])  # pythagorizzle
 assert False == valid_triangle([1, 1, 3])
 
-def main():
-    lines = my_input.split('\n')
-    triples = [map(int, line.split()) for line in lines if line]
+my_input = open('day3_input.txt').read()  # very wordy, keep it in a file
+lines = my_input.split('\n')
+triples = [map(int, line.split()) for line in lines if line]
 
+def main():
     print(sum(valid_triangle(triple) for triple in triples))
 
 if __name__ == '__main__':
