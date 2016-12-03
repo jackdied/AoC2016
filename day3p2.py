@@ -24,8 +24,8 @@ def main():
     for col in cols:
         col = list(col)
         while col:
-            trip = (col.pop(0), col.pop(0), col.pop(0))
-            new_triples.append(trip)
+            a, b, c, *col = col
+            new_triples.append((a, b, c))
     with mock.patch.object(day3, 'triples', new_triples):
         day3.main()
 
