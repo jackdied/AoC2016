@@ -1,4 +1,5 @@
 import day2
+import mock
 
 '''
 --- Part Two ---
@@ -21,3 +22,24 @@ So, given the actual keypad layout, the code would be 5DB3.
 Using the same instructions in your puzzle input, what is the correct bathroom code?
 '''
 
+_new_buttons = [['', '', '1'],
+                ['', '2', '3', '4'],
+                ['5', '6', '7', '8', '9'],
+                ['', 'A', 'B', 'C'],
+                ['', '', 'D']]
+new_buttons = {}
+for _y, _row in enumerate(_new_buttons):
+    for _x, _val in enumerate(_row):
+        if _val:
+            new_buttons[(_x, _y)] = _val
+
+assert '1' == new_buttons[(2, 0)]
+assert '5' == new_buttons[(0, 2)]
+
+def main():
+    # don't be a jerk, only replace the button layout temporarily
+    with mock.patch.object(day2, 'buttons', new_buttons):
+        day2.main()
+
+if __name__ == '__main__':
+    main()
