@@ -22,7 +22,6 @@ def main():
     new_triples = []
     cols = zip(*day3.triples)
     for col in cols:
-        col = list(col)
         while col:
             a, b, c, *col = col
             new_triples.append((a, b, c))
