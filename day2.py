@@ -28,22 +28,25 @@ Your puzzle input is the instructions from the document you found at the front d
 
 '''
 
-buttons = ((1, 2, 3)
-           (4, 5, 6),
-           (7, 8, 9))
+buttons = [[1, 2, 3],
+           [4, 5, 6],
+           [7, 8, 9]]
 movements = {'U': (0, -1),
              'D': (0, 1),
              'L': (-1, 0),
              'R': (1, 0),
             }
 
-def move(here, direction):
+def move(here, directions):
     x, y = here
-    dx, dy = movements[direction]
-    try:
-        return buttons[y+dy][x+dx]
-    except LookupError:
-        return x, y
+    for direction in directions:
+        dx, dy = movements[direction]
+        try:
+            buttons[y+dy][x+dx]
+            x, y = (y + dy), (x + dx)  # legal, keep it
+        except LookupError:  # out of bounds, ignore
+            pass
+    return x, y
 
 # BRRRRRRTTTT
 my_input = '''DLRRRRLRLDRRRURRURULRLLULUURRRDDLDULDULLUUDLURLURLLDLUUUDUUUULDRDUUDUDDRRLRDDDUDLDLLRUURDRULUULRLRDULULLRLRLRLDRLUULDLDDDDRRLRUUUDDRURRULLLRURLUURULLRLUDDLDRUULDRURULRRRLLLRDLULDRRDDUDLURURLDULDRDRLDDUURRDUDDRDUURDULDUURDUDRDRULDUDUULRRULUUURDUURUDLDURDLRLURUUDRRDLRUDRULRURLDLLDLLRRDRDRLRRRULDRRLDUURLUUDLUUDDLLRULRDUUDURURLUURDRRRUDLRDULRRRLDRDULRUUDDDLRDUULDRLLDRULUULULRDRUUUULULLRLLLRUURUULRRLDDDRULRRRUDURUR
@@ -56,8 +59,8 @@ def main():
     moves = my_input.split()
     results = []
     here = (1, 1)  # middle '5' button
-    for move in moves:
-        here = move(here, move)
+    for do_moves in moves:
+        here = move(here, do_moves)
         x, y = here
         results.append(buttons[y][x])
     print results
