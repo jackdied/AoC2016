@@ -15,3 +15,9 @@ In your puzzle input, how many of the listed triangles are possible?
 '''
 
 my_input = open('day3_input.txt').read()  # very wordy, keep it in a file
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
