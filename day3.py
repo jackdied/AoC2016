@@ -16,8 +16,12 @@ In your puzzle input, how many of the listed triangles are possible?
 
 my_input = open('day3_input.txt').read()  # very wordy, keep it in a file
 
+def valid_triange(side1, side2, side3):
+    return side1 + side2 > side3
+
 def main():
-    pass
+    lines = my_input.split('\n')
+    triples = [map(int, line.split()) for line in lines]
 
 if __name__ == '__main__':
     main()
