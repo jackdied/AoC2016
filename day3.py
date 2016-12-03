@@ -16,12 +16,19 @@ In your puzzle input, how many of the listed triangles are possible?
 
 my_input = open('day3_input.txt').read()  # very wordy, keep it in a file
 
-def valid_triange(side1, side2, side3):
+def valid_triangle(sides):
+    sides = sorted(sides)
+    side1, side2, side3 = sides
     return side1 + side2 > side3
+
+assert True == valid_triangle([3, 4, 5])  # pythagorizzle
+assert False == valid_triangle([1, 1, 3])
 
 def main():
     lines = my_input.split('\n')
-    triples = [map(int, line.split()) for line in lines]
+    triples = [map(int, line.split()) for line in lines if line]
+
+    print(sum(valid_triangle(triple) for triple in triples))
 
 if __name__ == '__main__':
     main()
