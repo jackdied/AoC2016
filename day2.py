@@ -71,8 +71,7 @@ def main():
     here = (1, 1)  # middle '5' button
     for do_moves in moves:
         here = move(here, do_moves)
-        x, y = here
-        results.append(buttons[(x, y)])
+        results.append(buttons[here])
     print results
 
 if __name__ == '__main__':
