@@ -52,5 +52,14 @@ def main():
         print(plain_text, digits)
 
 
+# calling rot1 rotN times is super expensive -- decoding the input takes 7 seconds.
+# so let's do it smarterly
+def rotN(letter, n=1):
+    if letter not in alphabet:  # hackish, as above
+        return letter
+    ind = (alphabet.index(letter) + n) % len(alphabet)
+    return alphabet[ind]
+
+
 if __name__ == '__main__':
     main()
