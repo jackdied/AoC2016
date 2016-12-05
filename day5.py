@@ -27,18 +27,18 @@ def zeros_md5(seed, start_i):
         md5 = hashlib.md5(inp.encode('utf8'))
         val = md5.hexdigest()
         if val.startswith('00000'):
-            return val[5], i
+            return val, i
         i += 1
 
-assert zeros_md5('abc', 1) == ('1', 3231929)
+assert zeros_md5('abc', 1) == ('00000155f8105dff7f56ee10fa9b9abd', 3231929)
 
 def main():
     passcode = ''
     i = 0
     while len(passcode) < 8:
-        letter, i = zeros_md5(my_input, i)
+        digest, i = zeros_md5(my_input, i)
         i += 1
-        passcode += letter
+        passcode += digest[5]
         print(passcode, i)
 
 if __name__ == '__main__':
