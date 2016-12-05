@@ -21,7 +21,20 @@ Given the actual Door ID and this new method, what is the password? Be extra pro
 
 
 def main():
-    pass
+    passcode = [None] * 8
+    i = 0
+    while None in passcode:
+        digest, i = day5.zeros_md5(day5.my_input, i)
+        i += 1
+        pos = digest[5]
+        letter = digest[6]
+        if pos not in '01234567':
+            continue
+        pos = int(pos)
+        if passcode[pos] is None:
+            passcode[pos] = letter
+        print(passcode, i)
+        
 
 if __name__ == '__main__':
     main()
