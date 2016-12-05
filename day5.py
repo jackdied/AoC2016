@@ -16,11 +16,30 @@ In this example, after continuing this search a total of eight times, the passwo
 
 Given the actual Door ID, what is the password?
 '''
+import hashlib
 
 my_input = 'wtnhxymk'
 
+def zeros_md5(seed, start_i):
+    i = start_i
+    while True:
+        inp = seed + str(i)
+        md5 = hashlib.md5(inp.encode('utf8'))
+        val = md5.hexdigest()
+        if val.startswith('00000'):
+            return val[5], i
+        i += 1
+
+assert zeros_md5('abc', 1) == ('1', 3231929)
+
 def main():
-    pass
+    passcode = ''
+    i = 0
+    while len(passcode) < 8:
+        letter, i = zeros_md5(my_input, i)
+        i += 1
+        passcode += letter
+        print(passcode, i)
 
 if __name__ == '__main__':
     main()
