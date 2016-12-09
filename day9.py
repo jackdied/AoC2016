@@ -20,13 +20,32 @@ What is the decompressed length of the file (your puzzle input)? Don't count whi
 
 '''
 
-def decompress(inp):
-    pass
+import re
 
-assert decompress('A(1x5)C') == 'ABBBBBC'
-assert decompress('(3x3)XYZ') == 'XYZXYZXYZ'
-assert decompress('(6x1)(1x3)A') == '(1x3)A'
-assert decompress('X(8x2)(3x3)ACY') == 'X(3x3)ABC(3x3)ABCY'
+def _decompress(inp):
+    ''' generator that returns chunks of decompressed data '''
+    marker = re.compile('\((\d)+x(\d+)\)')
+    while inp:
+        m = marker.search(inp)
+        if not m:
+            yield inp
+            return
+        uncompressed = inp[:m.start()]
+        yield uncompressed  # might be empty string
+        length, count = map(int, m.groups())
+        if length:
+            for _ in range(count):
+                yield inp[m.end():m.end()+length]
+        inp = inp[m.end()+length:]
+    return
+
+def decompress(inp):
+    return ''.join(_decompress(inp))
+
+assert decompress('A(1x5)BC') == 'ABBBBBC', decompress('A(1x5)C')
+assert decompress('(3x3)XYZ') == 'XYZXYZXYZ', decompress('(3x3)XYZ')
+assert decompress('(6x1)(1x3)A') == '(1x3)A', decompress('(6x1)(1x3)A')
+assert decompress('X(8x2)(3x3)ABCY') == 'X(3x3)ABC(3x3)ABCY', decompress('X(8x2)(3x3)ACY')
 
 
 def main():
