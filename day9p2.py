@@ -24,27 +24,26 @@ def _decompress(inp):
     while inp:
         m = marker.search(inp)
         if not m:
-            yield inp
+            yield len(inp)
             return
         uncompressed = inp[:m.start()]
-        yield uncompressed  # might be empty string
+        yield len(uncompressed)
         length, count = map(int, m.groups())
         repeat = inp[m.end():m.end()+length]  # might be empty string
-        repeat = ''.join(_decompress(repeat))
-        for _ in range(count):
-            yield repeat
+        repeat = sum(_decompress(repeat))
+        yield repeat * count
         inp = inp[m.end()+length:]
     return
 
 def decompress(inp):
-    return ''.join(_decompress(inp))
+    return sum(_decompress(inp))
 
-assert decompress('(27x12)(20x12)(13x14)(7x10)(1x12)A') == 'A' * 241920, len(decompress('(27x12)(20x12)(13x14)(7x10)(1x12)A'))
+assert decompress('(27x12)(20x12)(13x14)(7x10)(1x12)A') == 241920, decompress('(27x12)(20x12)(13x14)(7x10)(1x12)A')
 
 my_input = open('day9_input.txt').read().strip()
 
 def main():
-    print("output len", sum(len(x) for x in _decompress(my_input)))
+    print("output len", decompress(my_input))
 
 if __name__ == '__main__':
     main()
