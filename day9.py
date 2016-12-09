@@ -24,7 +24,7 @@ import re
 
 def _decompress(inp):
     ''' generator that returns chunks of decompressed data '''
-    marker = re.compile('\((\d)+x(\d+)\)')
+    marker = re.compile('\((\d+)x(\d+)\)')
     while inp:
         m = marker.search(inp)
         if not m:
@@ -33,9 +33,9 @@ def _decompress(inp):
         uncompressed = inp[:m.start()]
         yield uncompressed  # might be empty string
         length, count = map(int, m.groups())
-        if length:
-            for _ in range(count):
-                yield inp[m.end():m.end()+length]
+        repeat = inp[m.end():m.end()+length]  # might be empty string
+        for _ in range(count):
+            yield repeat
         inp = inp[m.end()+length:]
     return
 
@@ -44,12 +44,15 @@ def decompress(inp):
 
 assert decompress('A(1x5)BC') == 'ABBBBBC', decompress('A(1x5)C')
 assert decompress('(3x3)XYZ') == 'XYZXYZXYZ', decompress('(3x3)XYZ')
+assert decompress('A(2x2)BCD(2x2)EFG') == 'ABCBCDEFEFG', decompress('A(2x2)BCD(2x2)EFG')
 assert decompress('(6x1)(1x3)A') == '(1x3)A', decompress('(6x1)(1x3)A')
 assert decompress('X(8x2)(3x3)ABCY') == 'X(3x3)ABC(3x3)ABCY', decompress('X(8x2)(3x3)ACY')
 
+my_input = open('day9_input.txt').read().strip()
 
 def main():
-    pass
+    decompressed = decompress(my_input)
+    print("output len", len(decompressed))
 
 if __name__ == '__main__':
     main()
