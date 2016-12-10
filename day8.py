@@ -17,20 +17,18 @@ def make_rect(screen, width, height):
     return rect | screen
 
 def make_rotrow(screen, row, count):
-    def rotrow_mutator(pos):
-        x, y = pos
+    def rotrow_mutator(x, y):
         if y == row:
             x = (x + count) % WIDTH
         return (x, y)
-    return set(map(rotrow_mutator, screen))
+    return set(it.starmap(rotrow_mutator, screen))
 
 def make_rotcol(screen, col, count):
-    def rotcol_mutator(pos):
-        x, y = pos
+    def rotcol_mutator(x, y):
         if x == col:
             y = (y + count) % HEIGHT
         return (x, y)
-    return set(map(rotcol_mutator, screen))
+    return set(it.starmap(rotcol_mutator, screen))
 
 def exec_line(screen, line):
     _rect = (make_rect, re.compile('rect (\d+)x(\d+)'))
