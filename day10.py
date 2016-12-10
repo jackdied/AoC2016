@@ -32,65 +32,70 @@ my_input = open('day10_input.txt').read()
 from collections import defaultdict
 import re
 
-def make_bot(low_dest, high_dest):
-    def move_bot():
-        pass
-    return move_bot
-
-def main():
-    lines = my_input.split('\n')
-    bots = defaultdict(list)  # {bot_number: [chip1, chip2]}
-    output_bins = defaultdict(list)  # {bin_number: [chip1, chip2, ..]}
-    bot_instructions = {}
+def parse_bot_lines(lines):
     move_re = re.compile('bot (\d+) gives low to (\w+) (\d+) and high to (\w+) (\d+)')
     for line in lines:
         m = move_re.match(line)
         if not m:
             continue
-        
-        bot_from, *args = m.groups()
-        bot_from = int(bot_from)
-        assert bot_from not in bot_instructions
-        def exec_bot(bot_from=bot_from, args=args):
-            word_low, num_low, word_high, num_high = args
-            num_low, num_high = int(num_low), int(num_high)
-            run_next = []
-            (low, high) = bots[bot_from]
-            if low == 17 and high == 61:
-                print("FOND", bot_from, low, high)
-            bots[bot_from] = []
-            if word_low == 'bot':
-                run_next.append((num_low, low))
-            else:
-                run_next.append((-num_low, low))
-            if word_high == 'bot':
-                run_next.append((num_high, high))
-            else:
-                run_next.append((-num_high, high))
-            return run_next
-        exec_bot.__name__ == 'exec_bot_%d' % bot_from
-        bot_instructions[bot_from] = exec_bot
 
+        bot_from, word_low, num_low, word_high, num_high = m.groups()
+        bot_from = int(bot_from)
+        num_low, num_high = int(num_low), int(num_high)
+        # a little hacky, if the destination is an output make it negative
+        # (minus one more because there is both output zero and bot zero)
+        if word_low == 'output':
+            num_low = -num_low - 1
+        if word_high == 'output':
+            num_high = -num_high - 1
+        yield (bot_from, num_low, num_high)
+    return
+
+def parse_value_lines(lines):
     val_re = re.compile('value (\d+) goes to bot (\d+)')
-    give_list = []
     for line in lines:
         m = val_re.match(line)
         if m:
             (val, bot_to) = map(int, m.groups())
-            give_list.append((bot_to, val))
+            yield (bot_to, val)
+    return
 
+def main():
+    lines = my_input.split('\n')
+    output_bins = defaultdict(list)  # {bin_number: [chip1, chip2, ..]}
+    bot_holding = defaultdict(list)  # {bot_number: [chip1, chip2]}
+    bot_destination = {}  # {bot_number: (dest_num_low, dest_num_high)}
+
+    value_lines = [line for line in lines if line.startswith('value')]
+    bot_lines = [line for line in lines if line.startswith('bot')]
+
+    for bot_num, low_dest, high_dest in parse_bot_lines(bot_lines):
+        bot_destination[bot_num] = (low_dest, high_dest)
+
+    # execute a list of instructions that puts one value into one bot/output
+    give_list = list(parse_value_lines(lines))  # [(destination, chip_value), ..]
     give_list.reverse()
     while give_list:
         bot_to, val = give_list.pop()
         if bot_to < 0:  # actually an ouptut bin
-            output_bins[-bot_to].append(val)
+            output_bins[-bot_to-1].append(val)
             continue
-        bots[bot_to].append(val)
-        print((bot_to, val), bots[bot_to])
-        if len(bots[bot_to]) == 2:
-            run_next = bot_instructions[bot_to]()
-            give_list.extend(run_next)
+        bot_holding[bot_to].append(val)
+        assert len(bot_holding[bot_to]) < 3, "the problem is underspecified"
 
+        print((bot_to, val), bot_holding[bot_to])
+        if len(bot_holding[bot_to]) == 2:  # full, triggers a give away
+            low_val, high_val = sorted(bot_holding[bot_to])
+            if low_val == 17 and high_val == 61:
+                print("FOUND", bot_to, low_val, high_val)
+            bot_holding[bot_to] = []
+            low_dest, high_dest = bot_destination[bot_to]
+            give_list.append((high_dest, high_val))
+            give_list.append((low_dest, low_val))
+
+    for output_num in [0, 1, 2]:
+        print("Outputs in %d, %r" % (output_num, output_bins[output_num]))
+            
 if __name__== '__main__':
     main()
     
