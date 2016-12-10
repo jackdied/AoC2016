@@ -31,10 +31,9 @@ def make_rotcol(screen, col, count):
     return set(it.starmap(rotcol_mutator, screen))
 
 def exec_line(screen, line):
-    _rect = (make_rect, re.compile('rect (\d+)x(\d+)'))
-    _rotrow = (make_rotrow, re.compile('rotate row y=(\d+) by (\d+)'))
-    _rotcol = (make_rotcol, re.compile('rotate column x=(\d+) by (\d+)'))
-    parsers = [_rect, _rotrow, _rotcol]
+    parsers = [(make_rect, re.compile('rect (\d+)x(\d+)')),
+               (make_rotrow, re.compile('rotate row y=(\d+) by (\d+)')),
+               (make_rotcol, re.compile('rotate column x=(\d+) by (\d+)'))]
     for func, parse in parsers:
         if parse.match(line):
             args = map(int, parse.match(line).groups())
