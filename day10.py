@@ -42,13 +42,9 @@ def parse_bot_lines(lines):
         bot_from, word_low, num_low, word_high, num_high = m.groups()
         bot_from = int(bot_from)
         num_low, num_high = int(num_low), int(num_high)
-        # a little hacky, if the destination is an output make it negative
-        # (minus one more because there is both output zero and bot zero)
-        if word_low == 'output':
-            num_low = -num_low - 1
-        if word_high == 'output':
-            num_high = -num_high - 1
-        yield (bot_from, num_low, num_high)
+        dest_low = (word_low, num_low)
+        dest_high = (word_high, num_high)
+        yield (bot_from, dest_low, dest_high)
     return
 
 def parse_value_lines(lines):
@@ -57,14 +53,14 @@ def parse_value_lines(lines):
         m = val_re.match(line)
         if m:
             (val, bot_to) = map(int, m.groups())
-            yield (bot_to, val)
+            yield (('bot', bot_to), val)
     return
 
 def main():
     lines = my_input.split('\n')
     output_bins = defaultdict(list)  # {bin_number: [chip1, chip2, ..]}
     bot_holding = defaultdict(list)  # {bot_number: [chip1, chip2]}
-    bot_destination = {}  # {bot_number: (dest_num_low, dest_num_high)}
+    bot_destination = {}  # {bot_number: (dest_low, dest_high)}
 
     value_lines = [line for line in lines if line.startswith('value')]
     bot_lines = [line for line in lines if line.startswith('bot')]
@@ -76,22 +72,22 @@ def main():
     give_list = list(parse_value_lines(lines))  # [(destination, chip_value), ..]
     give_list.reverse()
     while give_list:
-        bot_to, val = give_list.pop()
-        if bot_to < 0:  # actually an ouptut bin
-            output_bins[-bot_to-1].append(val)
+        (dest_type, dest_num), val = give_list.pop()
+        if dest_type == 'output':
+            output_bins[dest_num].append(val)
             continue
-        bot_holding[bot_to].append(val)
-        assert len(bot_holding[bot_to]) < 3, "the problem is underspecified"
+        bot_holding[dest_num].append(val)
+        assert len(bot_holding[dest_num]) < 3, "the problem is underspecified"
 
-        print((bot_to, val), bot_holding[bot_to])
-        if len(bot_holding[bot_to]) == 2:  # full, triggers a give away
-            low_val, high_val = sorted(bot_holding[bot_to])
+        print((dest_num, val), bot_holding[dest_num])
+        if len(bot_holding[dest_num]) == 2:  # full, triggers a give away
+            low_val, high_val = sorted(bot_holding[dest_num])
             if low_val == 17 and high_val == 61:
-                print("FOUND", bot_to, low_val, high_val)
-            bot_holding[bot_to] = []
-            low_dest, high_dest = bot_destination[bot_to]
-            give_list.append((high_dest, high_val))
-            give_list.append((low_dest, low_val))
+                print("FOUND", dest_num, low_val, high_val)
+            bot_holding[dest_num] = []
+            dest_low, dest_high = bot_destination[dest_num]
+            give_list.append((dest_high, high_val))
+            give_list.append((dest_low, low_val))
 
     for output_num in [0, 1, 2]:
         print("Outputs in %d, %r" % (output_num, output_bins[output_num]))
