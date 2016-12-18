@@ -35,12 +35,9 @@ assert make_row('.^^^^') == '^^..^'
 
 def main():
     rows = [seed]
-    cnt = seed.count('.')
     while len(rows) < 400000:
-        row = make_row(rows[-1])
-        cnt += row.count('.')
-        rows.append(row)
-    print("COUNT", cnt)
+        rows.append(make_row(rows[-1]))
+    print("COUNT", sum(row.count('.') for row in rows))
     return
 
 
