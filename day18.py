@@ -15,8 +15,8 @@ seed = '^.^^^.^..^....^^....^^^^.^^.^...^^.^.^^.^^.^^..^.^...^.^..^.^^.^..^.....
 
 def make_row(prev):
     squares = []
-    prev = '.' + prev
-    for l, c, r in zip(prev, prev[1:] + '.', prev[2:]+'.'):
+    prev = '.' + prev + '.'
+    for l, c, r in zip(prev, prev[1:], prev[2:]):
         if ((l == c == trap and r == tile) or
             (c == r == trap and l == tile) or
             (l == trap and c == r == tile) or
